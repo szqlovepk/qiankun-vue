@@ -1,5 +1,36 @@
 <template>
-  <el-container direction="vertical" style="height: 100%">
+  <el-container direction="vertical" v-if="isQiankun">
+    <el-main>
+      <el-breadcrumb
+        separator-class="el-icon-arrow-right"
+        v-if="showBreadcrumb"
+      >
+        <template v-for="(route, index) in matchedRoutes">
+          <el-breadcrumb-item
+            v-if="
+              (route.meta && route.meta.breadcrumbTo === false) ||
+              index === matchedRoutes.length - 1
+            "
+            :key="route.path"
+          >
+            {{ route.meta.title }}
+            <!-- {{ route.path }} -->
+          </el-breadcrumb-item>
+          <el-breadcrumb-item
+            v-else
+            :key="route.path"
+            :to="{ path: route.path }"
+          >
+            {{ route.meta.title }}
+            <!-- {{ route.path }} -->
+          </el-breadcrumb-item>
+        </template>
+      </el-breadcrumb>
+      <router-view style="margin-top: 20px" />
+    </el-main>
+  </el-container>
+
+  <el-container direction="vertical" style="height: 100%" v-else>
     <Header />
     <el-container style="overflow: auto">
       <el-aside width="250px">
@@ -55,6 +86,10 @@ export default class Layout extends Vue {
     return this.$route.matched?.filter(
       (v) => v.meta?.title && v?.meta?.breadcrumb !== false
     );
+  }
+
+  private get isQiankun() {
+    return (window as any).__POWERED_BY_QIANKUN__;
   }
 }
 </script>
